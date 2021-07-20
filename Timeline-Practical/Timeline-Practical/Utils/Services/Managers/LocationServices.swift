@@ -16,6 +16,7 @@ class LocationService: NSObject {
     var currentLocation: CLLocation?
     var lastUserLocation: CLLocation?
     var currentUserLocation: ((CLLocation) -> ())?
+    var getSingleLocation: ((CLLocation) -> ())?
     var failedToGetLocation: (() -> ())?
     var changeAuthorizationStatus : ((CLAuthorizationStatus) -> ())?
     var isLocationFetched: Bool = false
@@ -81,9 +82,15 @@ extension LocationService: CLLocationManagerDelegate {
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         currentLocation = locations.last
-        if let userUpdatedLocation = locations.last{ //, !isLocationFetched {
+        
+        if let userUpdatedLocation = locations.last {
             currentUserLocation?(userUpdatedLocation)
         }
+        
+        if let userUpdatedLocation = locations.last, !isLocationFetched {
+            getSingleLocation?(userUpdatedLocation)
+        }
+
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
@@ -92,3 +99,12 @@ extension LocationService: CLLocationManagerDelegate {
     }
 }
 
+extension CLLocation {
+    /// Returns a dictionary representation of the location.
+    public var dictionaryRepresentation: [String: Any] {
+        var locationDictionary: [String: Any] = [:]
+        locationDictionary["latitude"] = coordinate.latitude
+        locationDictionary["longitude"] = coordinate.longitude
+        return locationDictionary
+    }
+}

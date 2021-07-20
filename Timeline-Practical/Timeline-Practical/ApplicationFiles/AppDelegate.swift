@@ -7,14 +7,18 @@
 
 import UIKit
 import CoreData
+import IQKeyboardManagerSwift
+import GoogleMaps
+
+let apiKey = "AIzaSyDHvVgsiipm58D-vJFkarssrH8c_53NEcE"
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
+        GMSServices.provideAPIKey(apiKey)
+        keyboardSettings()
         openAppUsingLaunchOptions(launchOptions: launchOptions)
         
         return true
@@ -33,31 +37,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        saveContext()
+    }
 
     // MARK: - Core Data stack
 
+    // MARK: - Core Data stack
     lazy var persistentContainer: NSPersistentContainer = {
         /*
          The persistent container for the application. This implementation
          creates and returns a container, having loaded the store for the
          application to it. This property is optional since there are legitimate
          error conditions that could cause the creation of the store to fail.
+         */
+        var container = NSPersistentContainer(name: "Location")
+        let storeUrl = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("Location.sqlite")
+        print("DB Path ", storeUrl)
+
+        let description = NSPersistentStoreDescription(url: storeUrl)
+
+        description.shouldInferMappingModelAutomatically = true
+        description.shouldMigrateStoreAutomatically = true
+
+        container.persistentStoreDescriptions = [NSPersistentStoreDescription(url: storeUrl)]
+        /*
+        /*add necessary support for migration*/
+        let description = NSPersistentStoreDescription()
+        description.shouldMigrateStoreAutomatically = true
+        description.shouldInferMappingModelAutomatically = true
+        container.persistentStoreDescriptions =  [description]
+        /*add necessary support for migration*/
         */
-        let container = NSPersistentContainer(name: "Timeline_Practical")
+        
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                 
-                /*
-                 Typical reasons for an error here include:
-                 * The parent directory does not exist, cannot be created, or disallows writing.
-                 * The persistent store is not accessible, due to permissions or data protection when the device is locked.
-                 * The device is out of space.
-                 * The store could not be migrated to the current model version.
-                 Check the error message to determine what the actual problem was.
-                 */
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                print(error)
             }
         })
         return container
@@ -91,4 +107,27 @@ extension AppDelegate {
             LocationService.shared.locationManager?.startMonitoringSignificantLocationChanges()
         }
     }
+    
+    func keyboardSettings() {
+        // IQKeyboard settings...
+        //Enabling keyboard manager
+        IQKeyboardManager.shared.enable = true
+        IQKeyboardManager.shared.keyboardDistanceFromTextField = 15
+        
+        //Enabling autoToolbar behaviour. If It is set to NO. You have to manually create IQToolbar for keyboard.
+        IQKeyboardManager.shared.enableAutoToolbar = true
+        IQKeyboardManager.shared.toolbarDoneBarButtonItemText = "Done"
+        
+        //Setting toolbar behavious to IQAutoToolbarBySubviews. Set it to IQAutoToolbarByTag to manage previous/next according to UITextField's tag property in increasing order.
+        IQKeyboardManager.shared.toolbarManageBehaviour = .bySubviews
+        
+        //Resign textField if touched outside of UITextField/UITextView.
+        //IQKeyboardManager.shared.shouldResignOnTouchOutside = true;
+        
+        //Show TextField placeholder texts on autoToolbar
+        IQKeyboardManager.shared.shouldShowToolbarPlaceholder = true
+        
+        IQKeyboardManager.shared.previousNextDisplayMode = .alwaysShow
+    }
+
 }

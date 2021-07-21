@@ -7,31 +7,42 @@
 
 import UIKit
 import CoreLocation
+import GoogleMaps
 
 class ViewController: UIViewController {
-
-    lazy var arrLocations: [[String: Any]] = []
-
-    var locationManager = LocationService.shared
-    //var datePicker = UIDatePicker()
     
+    @IBOutlet weak var datePickerView: UIView!
     @IBOutlet weak var toolbar: UIToolbar!
     @IBOutlet weak var datePicker: UIDatePicker!
+    @IBOutlet weak var mapView: GMSMapView!
     
+    lazy var arrPlaces: [Places] = []
+    lazy var arrLocations: [[String: Any]] = []
+    var locationManager = LocationService.shared
+
     var currentLocation: CLLocation?
+    lazy var selectedDate: String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        configureUI()
         locationPermission()
-        toolbar.isHidden = true
-        datePicker.isHidden = true
-        self.title = Date().toString(formateType: DateFormate.titleDate)
+        
+        if let tabBarController = self.navigationController?.tabBarController, let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+            tabBarController.delegate = appDelegate
+        }
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        arrPlaces = DBManager.fetchPlaces(selectedDate: selectedDate)
+        
+        DispatchQueue.main.async {
+            self.drawPolylinesOnGoogleMap()
+        }
         getUserLocation()
     }
 }
@@ -40,25 +51,51 @@ class ViewController: UIViewController {
 extension ViewController {
     
     @IBAction func calendarTapped(_ sender: UIBarButtonItem) {
+        datePickerView.isHidden = false
         toolbar.isHidden = false
         datePicker.isHidden = false
     }
     
     @IBAction func toolbarDoneTapped(_ sender: UIBarButtonItem) {
+        datePickerView.isHidden = true
         toolbar.isHidden = true
         datePicker.isHidden = true
+     
+        self.navigationController?.navigationBar.topItem?.title = selectedDate
+
+        arrPlaces = DBManager.fetchPlaces(selectedDate: selectedDate)
+        drawPolylinesOnGoogleMap()
     }
     
     @IBAction func addPlaceTapped(_ sender: UIBarButtonItem) {
         guard let addPlaceVC = self.storyboard?.instantiateViewController(withIdentifier: "AddPlaceViewController") as? AddPlaceViewController else {
             return
         }
+        addPlaceVC.selectedDate = selectedDate
         addPlaceVC.currentLocation = currentLocation
         self.navigationController?.pushViewController(addPlaceVC, animated: true)
      }
     
+    @IBAction func settingTapped(_ sender: UIBarButtonItem) {
+        guard let settingViewController = self.storyboard?.instantiateViewController(withIdentifier: "SettingsViewController") as? SettingsViewController else {
+            return
+        }
+        self.navigationController?.pushViewController(settingViewController, animated: true)
+    }
+
+    
     @IBAction func handleDateSelection(_ sender: UIDatePicker) {
-        self.title = sender.date.toString(formateType: DateFormate.titleDate)
+        selectedDate = sender.date.toString(formateType: DateFormate.titleDate)
+    }
+    
+    private func configureUI() {
+        toolbar.isHidden = true
+        datePicker.isHidden = true
+        datePickerView.isHidden = true
+        
+        datePicker.maximumDate = Date()
+        self.navigationController?.navigationBar.topItem?.title = Date().toString(formateType: DateFormate.titleDate)
+        selectedDate = Date().toString(formateType: DateFormate.titleDate)
     }
 
     private func locationPermission() {
@@ -85,16 +122,45 @@ extension ViewController {
             
             guard let `self` = self else { return }
  
-            print("Latitude:", location.coordinate.latitude)
-            print("Longitude:", location.coordinate.longitude)
-            
             self.arrLocations.append(location.dictionaryRepresentation)
-            print(self.arrLocations.count)
+            
+            location.fetchName { name, error in
+                if error == nil {
+                    let dicRequestAddPlace: [String: Any] = ["name": name ?? "",
+                                                             "startTime": location.timestamp.toString(formateType: .HH_MM),
+                                                             "endTime": location.timestamp.toString(formateType: .HH_MM),
+                                                             "notes": "",
+                                                             "lat": location.coordinate.latitude,
+                                                             "lng": location.coordinate.longitude,
+                                                             "date": self.selectedDate]
+                    
+                    print(dicRequestAddPlace)
+                    DBManager.addPlace(dicRequest: dicRequestAddPlace)
+                }
+            }
         }
         
         locationManager.getSingleLocation = { [weak self] location in
             guard let `self` = self else { return }
             self.currentLocation = location
+        }
+
+    }
+    
+    private func drawPolylinesOnGoogleMap() {
+        mapView.clear()
+        let path = GMSMutablePath()
+        for place in arrPlaces {
+            path.add(CLLocationCoordinate2D(latitude: place.latitude, longitude: place.longitude))
+        }
+        let polyline = GMSPolyline(path: path)
+        polyline.strokeColor = .blue
+        polyline.strokeWidth = 5
+        polyline.map = mapView
+        
+        if let place = arrPlaces.first {
+            let camera = GMSCameraPosition.camera(withLatitude: place.latitude, longitude: place.longitude, zoom: 10.0)
+            mapView.camera = camera
         }
 
     }

@@ -15,15 +15,15 @@ enum DateFormate: String {
     case converted = "dd MMM yyyy HH:mm a"
     
     case titleDate = "dd-MMM-yyyy"
-    case HH_MM = "HH:mm a"
+    case HH_MM = "h:mm a"
 }
 
 extension String {
     //Convert timezone string to NSTimeZone
-    func toDate(format: DateFormate = .yyyy_MM_dd_T_HH_MM_SS_Z, timZone: TimeZone? = TimeZone(abbreviation: "UTC")) -> Date? {
+    func toDate(format: DateFormate = .yyyy_MM_dd_T_HH_MM_SS_Z) -> Date? {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = format.rawValue
-        dateFormatter.timeZone = timZone
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         if format == .yyyy_MM_dd_T_HH_MM_SS_Z {
             if let formattedDate = dateFormatter.date(from: self) {
                 return formattedDate
@@ -33,6 +33,10 @@ extension String {
             }
         }
         return dateFormatter.date(from: self)
+    }
+    
+    func trim() -> String {
+        return self.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 extension Date {

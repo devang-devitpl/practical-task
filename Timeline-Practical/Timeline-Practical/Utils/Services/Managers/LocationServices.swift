@@ -48,9 +48,14 @@ class LocationService: NSObject {
         locationManager = CLLocationManager()
         locationManager?.allowsBackgroundLocationUpdates = true
         locationManager?.delegate = self
-        locationManager?.distanceFilter = 10.0
-        locationManager?.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager?.pausesLocationUpdatesAutomatically = false
+        locationManager?.distanceFilter = 50.0
+        locationManager?.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        locationManager?.pausesLocationUpdatesAutomatically = true
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(distanceFilterValueChanged(notification:)), name: NSNotification.Name.init("distanceFilter"), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(accuracyChanged(notification:)), name: NSNotification.Name.init("accuracy"), object: nil)
+
     }
     
     func startLocationUpdate() {
@@ -59,6 +64,23 @@ class LocationService: NSObject {
 
     func stopLocationUpdate() {
         locationManager?.stopUpdatingLocation()
+    }
+    
+    @objc func distanceFilterValueChanged(notification: Notification) {
+        guard let dicUserInfo = notification.userInfo,
+              let filterValue = dicUserInfo["value"] as? String else {
+            return
+        }
+        locationManager?.distanceFilter = Double(filterValue) ?? 10.0
+    }
+    
+    @objc func accuracyChanged(notification: Notification) {
+        guard let dicUserInfo = notification.userInfo,
+              let accuracy = dicUserInfo["value"] as? CLLocationAccuracy else {
+            return
+        }
+        print(accuracy)
+        locationManager?.desiredAccuracy = accuracy
     }
 }
 
@@ -92,7 +114,7 @@ extension LocationService: CLLocationManagerDelegate {
         }
 
     }
-
+    
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Error: Failed to get User current Location \(error.localizedDescription)")
         failedToGetLocation?()
@@ -106,5 +128,12 @@ extension CLLocation {
         locationDictionary["latitude"] = coordinate.latitude
         locationDictionary["longitude"] = coordinate.longitude
         return locationDictionary
+    }
+    
+    func fetchName(completion: @escaping (_ name: String?, _ error: Error?) -> ()) {
+        
+        CLGeocoder().reverseGeocodeLocation(self) {
+            completion($0?.first?.name, $1)
+        }
     }
 }

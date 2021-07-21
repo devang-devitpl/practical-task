@@ -52,8 +52,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
          application to it. This property is optional since there are legitimate
          error conditions that could cause the creation of the store to fail.
          */
-        var container = NSPersistentContainer(name: "Location")
-        let storeUrl = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("Location.sqlite")
+        var container = NSPersistentContainer(name: "Timeline_Practical")
+        let storeUrl = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent("Timeline_Practical.sqlite")
         print("DB Path ", storeUrl)
 
         let description = NSPersistentStoreDescription(url: storeUrl)
@@ -130,4 +130,16 @@ extension AppDelegate {
         IQKeyboardManager.shared.previousNextDisplayMode = .alwaysShow
     }
 
+}
+
+// MARK: -  UITabBarControllerDelegate Methods
+extension AppDelegate: UITabBarControllerDelegate {
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        guard let timeLineVC = (tabBarController.selectedViewController as? UINavigationController)?.visibleViewController as? TimelineViewController else {
+            return
+        }
+        if let viewCntl = (tabBarController.viewControllers?[0] as? UINavigationController)?.children[0] as? ViewController {
+            timeLineVC.fetchPlaces(selectedDate: viewCntl.selectedDate)
+        }
+    }
 }

@@ -82,7 +82,7 @@ extension SearchLocationViewController {
 // MARK: -  UITextFieldDelegate Methods
 extension SearchLocationViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        
+        textField.resignFirstResponder()
         searchPlacesAPICall(query: textField.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "")
         
         return true

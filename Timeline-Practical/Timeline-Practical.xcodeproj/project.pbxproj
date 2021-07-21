@@ -19,6 +19,8 @@
 		2E1F256926A6C17200D1E61A /* LocationList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1F256826A6C17200D1E61A /* LocationList.swift */; };
 		2E1F256B26A6D41700D1E61A /* DBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1F256A26A6D41700D1E61A /* DBManager.swift */; };
 		2E1F256D26A6DF2700D1E61A /* Date+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1F256C26A6DF2700D1E61A /* Date+String.swift */; };
+		2EC38F2926A8006D00C09B47 /* TimelineViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC38F2826A8006C00C09B47 /* TimelineViewController.swift */; };
+		2EC38F2B26A82EB700C09B47 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC38F2A26A82EB700C09B47 /* SettingsViewController.swift */; };
 		2EFE08E426A6F93B006D690C /* AddPlaceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EFE08E326A6F93B006D690C /* AddPlaceViewController.swift */; };
 		2EFE08E626A70F13006D690C /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EFE08E526A70F13006D690C /* Constants.swift */; };
 		2EFE08E826A71D29006D690C /* SearchLocationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EFE08E726A71D29006D690C /* SearchLocationViewController.swift */; };
@@ -43,6 +45,8 @@
 		2E1F256826A6C17200D1E61A /* LocationList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationList.swift; sourceTree = "<group>"; };
 		2E1F256A26A6D41700D1E61A /* DBManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBManager.swift; sourceTree = "<group>"; };
 		2E1F256C26A6DF2700D1E61A /* Date+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+String.swift"; sourceTree = "<group>"; };
+		2EC38F2826A8006C00C09B47 /* TimelineViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineViewController.swift; sourceTree = "<group>"; };
+		2EC38F2A26A82EB700C09B47 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		2EFE08E326A6F93B006D690C /* AddPlaceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPlaceViewController.swift; sourceTree = "<group>"; };
 		2EFE08E526A70F13006D690C /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		2EFE08E726A71D29006D690C /* SearchLocationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchLocationViewController.swift; sourceTree = "<group>"; };
@@ -111,6 +115,8 @@
 				2E1F254626A69E8C00D1E61A /* ViewController.swift */,
 				2EFE08E326A6F93B006D690C /* AddPlaceViewController.swift */,
 				2EFE08E726A71D29006D690C /* SearchLocationViewController.swift */,
+				2EC38F2826A8006C00C09B47 /* TimelineViewController.swift */,
+				2EC38F2A26A82EB700C09B47 /* SettingsViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -351,6 +357,7 @@
 				2E1F254D26A69E8C00D1E61A /* Timeline_Practical.xcdatamodeld in Sources */,
 				2E1F254726A69E8C00D1E61A /* ViewController.swift in Sources */,
 				2E1F256B26A6D41700D1E61A /* DBManager.swift in Sources */,
+				2EC38F2B26A82EB700C09B47 /* SettingsViewController.swift in Sources */,
 				2E1F254326A69E8C00D1E61A /* AppDelegate.swift in Sources */,
 				2E1F256D26A6DF2700D1E61A /* Date+String.swift in Sources */,
 				2EFE08EA26A726C6006D690C /* APIService.swift in Sources */,
@@ -358,6 +365,7 @@
 				2E1F256326A69FB200D1E61A /* LocationServices.swift in Sources */,
 				2E1F254526A69E8C00D1E61A /* SceneDelegate.swift in Sources */,
 				2E1F256926A6C17200D1E61A /* LocationList.swift in Sources */,
+				2EC38F2926A8006D00C09B47 /* TimelineViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

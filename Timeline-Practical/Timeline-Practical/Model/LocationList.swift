@@ -13,8 +13,13 @@ class LocationList: Mappable {
     
     var lat: Double?
     var lng: Double?
-    var time: String?
     var notes: String?
+    var name: String?
+    var startTime: String?
+    var endTime: String?
+    var date: String?
+    
+    init() {}
     
     required init?(map: Map) {
     }
@@ -22,7 +27,10 @@ class LocationList: Mappable {
     func mapping(map: Map) {
         lat <- map["lat"]
         lng <- map["lng"]
-        time <- map["time"]
+        name <- map["name"]
+        startTime <- map["startTime"]
+        endTime <- map["endTime"]
         notes <- map["notes"]
+        date <- map["date"]
     }
 }

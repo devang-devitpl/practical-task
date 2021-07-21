@@ -23,21 +23,19 @@ class AddPlaceViewController: UIViewController {
     var currentLocation: CLLocation?
     var selectedDate: String = ""
 
-    let marker = GMSMarker()
-
+    var locationManager = LocationService.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if let currentLocation = locationManager.currentLocation {
+            self.currentLocation = currentLocation
+        }
         configureUI()
         initialDatePicker()
         locationUpdate()
         
         txtSearchPlace.delegate = self
-        LocationService.shared.getSingleLocation = { location in
-            print("hello",location)
-        }
-
     }
 
     @IBAction func btnSaveTapped(_ sender: UIButton) {
@@ -111,6 +109,7 @@ extension AddPlaceViewController {
         mapView.camera = camera
 
         // Creates a marker in the center of the map.
+        let marker = GMSMarker()
         marker.isDraggable = true
         marker.position = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
         marker.map = mapView

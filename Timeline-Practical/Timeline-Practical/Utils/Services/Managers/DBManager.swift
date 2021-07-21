@@ -78,8 +78,6 @@ class DBManager: NSObject {
     
     class func fetchPlaces(selectedDate: String) -> [Places] {
         
-//        var arrLocations: [LocationList] = []
-        
         let context = getContext()
         
         do {
@@ -88,17 +86,53 @@ class DBManager: NSObject {
             fetchRequest.predicate = NSPredicate(format: "date == %@", selectedDate)
             
             return try context.fetch(fetchRequest)
-//                .forEach({ (place) in
-//
-//                let location = LocationList
-//            })
-
             
         } catch {
             print("error fetching places", error.localizedDescription)
         }
         
         return []
+    }
+    
+    class func updatePlace(dicRequest: [String: Any]) {
+        let context = getContext()
+        
+        guard let name = dicRequest["name"] as? String,
+              let notes = dicRequest["notes"] as? String,
+              let startTime = dicRequest["startTime"] as? String,
+              let endTime = dicRequest["endTime"] as? String,
+              let lat = dicRequest["lat"] as? Double,
+              let lng = dicRequest["lng"] as? Double,
+              let date = dicRequest["date"] as? String else {
+            return
+        }
+
+        
+        do {
+            let fetchRequest:NSFetchRequest<Places> = Places.fetchRequest()
+            let latPredicate = NSPredicate(format: "latitude == %lf",  lat)
+            let lngPredicate = NSPredicate(format: "longitude == %lf",  lng)
+            fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [latPredicate, lngPredicate])
+            
+            if let fetchedPlace = try context.fetch(fetchRequest).first {
+                fetchedPlace.name = name
+                fetchedPlace.notes = notes
+                fetchedPlace.startTime = startTime
+                fetchedPlace.endTime = endTime
+                fetchedPlace.latitude = lat
+                fetchedPlace.longitude = lng
+                fetchedPlace.date = date
+            }
+            
+        } catch {
+            print("Error in udpating place:", error.localizedDescription)
+        }
+        
+        do {
+            try context.save()
+        } catch {
+            print("error updating place to locaton: ", error.localizedDescription)
+        }
     }
 }
 

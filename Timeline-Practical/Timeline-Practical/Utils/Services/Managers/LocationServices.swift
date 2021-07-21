@@ -90,13 +90,13 @@ extension LocationService: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         isLocationFetched = false
         switch status {
-            case .notDetermined:
-                locationManager?.requestWhenInUseAuthorization()
-            case .restricted, .denied:
-                //User is not allowed access of location
-                locationManager?.stopUpdatingLocation()
-            case .authorizedAlways, .authorizedWhenInUse:
-                locationManager?.startUpdatingLocation()
+        case .notDetermined:
+            locationManager?.requestWhenInUseAuthorization()
+        case .restricted, .denied:
+            //User is not allowed access of location
+            locationManager?.stopUpdatingLocation()
+        case .authorizedAlways, .authorizedWhenInUse:
+            locationManager?.startUpdatingLocation()
         @unknown default: break
         }
         changeAuthorizationStatus?(status)

@@ -49,3 +49,13 @@ extension UIApplication {
         return base
     }
 }
+
+extension UIView {
+    func setDropShadow(radius : CGFloat, color: UIColor = UIColor.lightGray, offset: CGSize = CGSize.zero ) {
+        layer.shadowColor = color.cgColor
+        layer.shadowOffset = offset
+        layer.shadowOpacity = 0.6
+        layer.masksToBounds = false
+        layer.cornerRadius = radius
+    }
+}

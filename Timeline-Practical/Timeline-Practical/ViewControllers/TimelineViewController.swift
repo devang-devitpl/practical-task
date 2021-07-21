@@ -20,7 +20,7 @@ class TimelineViewController: UIViewController {
         super.viewDidLoad()
 
         tblTimeLine.tableFooterView = UIView()
-        fetchPlaces(selectedDate: selectedDate)
+//        fetchPlaces(selectedDate: selectedDate)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -50,15 +50,17 @@ extension TimelineViewController: UITableViewDataSource, UITableViewDelegate {
         return arrPlaces.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let timelineCell = tableView.dequeueReusableCell(withIdentifier: "TimelineCell", for: indexPath)
-        
-        timelineCell.textLabel?.text = arrPlaces[indexPath.row].name ?? ""
-        timelineCell.detailTextLabel?.text = "\(arrPlaces[indexPath.row].startTime ?? "") - \(arrPlaces[indexPath.row].endTime ?? "")"
-        
-        return timelineCell
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
     
-    
-    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let timelineCell = tableView.dequeueReusableCell(withIdentifier: "TimeLineTableViewCell", for: indexPath) as? TimeLineTableViewCell else {
+            return UITableViewCell()
+        }
+        
+        timelineCell.set(place: arrPlaces[indexPath.row])
+        
+        return timelineCell
+    }    
 }

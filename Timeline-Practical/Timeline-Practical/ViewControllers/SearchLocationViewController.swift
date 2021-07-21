@@ -25,17 +25,21 @@ class SearchLocationViewController: UIViewController {
     var currentLocation: CLLocation?
     
     lazy var arrSearchLocation: [SearchLocation] = []
-    
+    var locationManager = LocationService.shared
+
     override func viewDidLoad() {
         super.viewDidLoad()
+       
+        if let currentLocation = locationManager.currentLocation {
+            self.currentLocation = currentLocation
+        }
 
         txtSearchPlace.delegate = self
-        
     }
+    
     @IBAction func btnCloseTapped(_ sender: UIButton) {
         self.dismiss(animated: true, completion: nil)
     }
-
 }
 
 // MARK: -  Custom Methods

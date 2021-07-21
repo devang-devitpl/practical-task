@@ -72,7 +72,7 @@ extension ViewController {
             return
         }
         addPlaceVC.selectedDate = selectedDate
-        addPlaceVC.currentLocation = currentLocation
+//        addPlaceVC.currentLocation = currentLocation
         self.navigationController?.pushViewController(addPlaceVC, animated: true)
      }
     
@@ -123,9 +123,12 @@ extension ViewController {
             guard let `self` = self else { return }
  
             self.arrLocations.append(location.dictionaryRepresentation)
-            
+            if let currentLocation = self.locationManager.currentLocation {
+                self.currentLocation = currentLocation
+            }
             location.fetchName { name, error in
                 if error == nil {
+                    
                     let dicRequestAddPlace: [String: Any] = ["name": name ?? "",
                                                              "startTime": location.timestamp.toString(formateType: .HH_MM),
                                                              "endTime": location.timestamp.toString(formateType: .HH_MM),
@@ -133,18 +136,24 @@ extension ViewController {
                                                              "lat": location.coordinate.latitude,
                                                              "lng": location.coordinate.longitude,
                                                              "date": self.selectedDate]
+
                     
-                    print(dicRequestAddPlace)
+                    let lat = location.coordinate.latitude
+                    let lng = location.coordinate.longitude
+                    
+                    if let lastPlace = self.arrPlaces.last, lat == lastPlace.latitude, lng == lastPlace.longitude,
+                       lastPlace.date == Date().toString(formateType: DateFormate.titleDate) {
+                        
+                        print("same place found, update in local DB")
+                        DBManager.updatePlace(dicRequest: dicRequestAddPlace)
+                        return
+                    }
+
+                    print("Place added",dicRequestAddPlace)
                     DBManager.addPlace(dicRequest: dicRequestAddPlace)
                 }
             }
         }
-        
-        locationManager.getSingleLocation = { [weak self] location in
-            guard let `self` = self else { return }
-            self.currentLocation = location
-        }
-
     }
     
     private func drawPolylinesOnGoogleMap() {

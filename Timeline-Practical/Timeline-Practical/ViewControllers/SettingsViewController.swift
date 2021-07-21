@@ -21,16 +21,16 @@ class SettingsViewController: UIViewController {
         pickerView.dataSource = self
         pickerView.delegate = self
         
+        distanceSlider.value = 100
+        lblDistance.text = "\(String(format: "%.0f", distanceSlider.value))M"
     }
     
     @IBAction func sliderValueChanged(_ sender: UISlider) {
         let formatted = String(format: "%.0f", sender.value)
 
-        lblDistance.text = formatted
+        lblDistance.text = "\(formatted)M"
         
         NotificationCenter.default.post(name: NSNotification.Name.init(rawValue: "distanceFilter"), object: nil, userInfo: ["value": formatted])
-        
-        
     }
 }
 

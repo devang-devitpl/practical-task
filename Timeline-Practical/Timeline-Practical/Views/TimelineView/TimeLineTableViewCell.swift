@@ -13,6 +13,7 @@ class TimeLineTableViewCell: UITableViewCell {
     @IBOutlet weak var lblName: UILabel!
     @IBOutlet weak var lblLatLng: UILabel!
     @IBOutlet weak var lblTime: UILabel!
+    @IBOutlet weak var lblNotes: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -25,5 +26,6 @@ class TimeLineTableViewCell: UITableViewCell {
         lblName.text = place.name ?? ""
         lblLatLng.text = "\(place.latitude), \(place.longitude)"
         lblTime.text = "\(place.startTime ?? "") - \(place.endTime ?? "")"
+        lblNotes.text = place.notes ?? ""
     }
 }

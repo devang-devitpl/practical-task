@@ -18,19 +18,24 @@ class SettingsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        pickerView.dataSource = self
-        pickerView.delegate = self
-        
-        distanceSlider.value = 100
-        lblDistance.text = "\(String(format: "%.0f", distanceSlider.value))M"
+        configureUI()
     }
     
     @IBAction func sliderValueChanged(_ sender: UISlider) {
         let formatted = String(format: "%.0f", sender.value)
 
-        lblDistance.text = "\(formatted)M"
+        lblDistance.text = "\(formatted) m"
         
         NotificationCenter.default.post(name: NSNotification.Name.init(rawValue: "distanceFilter"), object: nil, userInfo: ["value": formatted])
+    }
+    
+    private func configureUI() {
+        pickerView.dataSource = self
+        pickerView.delegate = self
+        
+        distanceSlider.value = 100
+        lblDistance.text = "\(String(format: "%.0f", distanceSlider.value)) m"
+        self.title = "Settings"
     }
 }
 

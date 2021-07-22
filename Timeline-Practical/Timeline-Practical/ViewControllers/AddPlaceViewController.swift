@@ -34,8 +34,6 @@ class AddPlaceViewController: UIViewController {
         configureUI()
         initialDatePicker()
         locationUpdate()
-        
-        txtSearchPlace.delegate = self
     }
 
     @IBAction func btnSaveTapped(_ sender: UIButton) {
@@ -56,6 +54,7 @@ class AddPlaceViewController: UIViewController {
             print(dicRequestAddPlace)
             
             DBManager.addPlace(dicRequest: dicRequestAddPlace)
+            self.navigationController?.popViewController(animated: true)
         }
     }
 
@@ -72,6 +71,8 @@ extension AddPlaceViewController {
         }
         
         mapView.delegate = self
+        txtSearchPlace.delegate = self
+        self.title = selectedDate
     }
     
     private func initialDatePicker() {

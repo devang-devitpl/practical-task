@@ -17,7 +17,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var mapView: GMSMapView!
     
     lazy var arrPlaces: [Places] = []
-    lazy var arrLocations: [[String: Any]] = []
+    
     var locationManager = LocationService.shared
 
     var currentLocation: CLLocation?
@@ -37,7 +37,6 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         arrPlaces = DBManager.fetchPlaces(selectedDate: selectedDate)
         
         DispatchQueue.main.async {
@@ -122,10 +121,27 @@ extension ViewController {
             
             guard let `self` = self else { return }
  
-            self.arrLocations.append(location.dictionaryRepresentation)
             if let currentLocation = self.locationManager.currentLocation {
                 self.currentLocation = currentLocation
             }
+           
+            let dicRequestAddPlace: [String: Any] = ["startTime": location.timestamp.toString(formateType: .HH_MM),
+                                                     "endTime": location.timestamp.toString(formateType: .HH_MM),
+                                                     "lat": location.coordinate.latitude,
+                                                     "lng": location.coordinate.longitude,
+                                                     "date": self.selectedDate]
+            
+            let lat = location.coordinate.latitude
+            let lng = location.coordinate.longitude
+            
+            if let lastPlace = self.arrPlaces.last, lat == lastPlace.latitude, lng == lastPlace.longitude,
+               lastPlace.date == Date().toString(formateType: DateFormate.titleDate) {
+                
+                print("same place found, update in local DB")
+                DBManager.updatePlace(dicRequest: dicRequestAddPlace)
+                return
+            }
+
             location.fetchName { name, error in
                 if error == nil {
                     
@@ -138,19 +154,16 @@ extension ViewController {
                                                              "date": self.selectedDate]
 
                     
-                    let lat = location.coordinate.latitude
-                    let lng = location.coordinate.longitude
-                    
-                    if let lastPlace = self.arrPlaces.last, lat == lastPlace.latitude, lng == lastPlace.longitude,
-                       lastPlace.date == Date().toString(formateType: DateFormate.titleDate) {
-                        
-                        print("same place found, update in local DB")
-                        DBManager.updatePlace(dicRequest: dicRequestAddPlace)
-                        return
-                    }
 
                     print("Place added",dicRequestAddPlace)
                     DBManager.addPlace(dicRequest: dicRequestAddPlace)
+                    NotificationConst.updateLocationList.postNotification()
+                    
+                    
+                    self.arrPlaces = DBManager.fetchPlaces(selectedDate: self.selectedDate)
+
+                    
+                    self.drawPolylineForUpdatedLocation(lat: location.coordinate.latitude, lng: location.coordinate.longitude)
                 }
             }
         }
@@ -161,16 +174,43 @@ extension ViewController {
         let path = GMSMutablePath()
         for place in arrPlaces {
             path.add(CLLocationCoordinate2D(latitude: place.latitude, longitude: place.longitude))
+            let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: place.latitude, longitude: place.longitude))
+            marker.map = mapView
+
         }
         let polyline = GMSPolyline(path: path)
         polyline.strokeColor = .blue
         polyline.strokeWidth = 5
         polyline.map = mapView
         
-        if let place = arrPlaces.first {
-            let camera = GMSCameraPosition.camera(withLatitude: place.latitude, longitude: place.longitude, zoom: 10.0)
+        if let place = arrPlaces.last {
+            let camera = GMSCameraPosition.camera(withLatitude: place.latitude, longitude: place.longitude, zoom: 20.0)
             mapView.camera = camera
+            mapView.animate(to: camera)
         }
+    }
+
+    private func drawPolylineForUpdatedLocation(lat: Double, lng: Double) {
+
+        let marker = GMSMarker(position: CLLocationCoordinate2D(latitude: lat, longitude: lng))
+        marker.map = mapView
+
+        
+        let path = GMSMutablePath()
+        
+        for place in arrPlaces {
+            path.add(CLLocationCoordinate2D(latitude: place.latitude, longitude: place.longitude))
+        }
+        
+        
+        let polyline = GMSPolyline(path: path)
+        polyline.strokeColor = .blue
+        polyline.strokeWidth = 5
+        polyline.map = mapView
+        
+        let camera = GMSCameraPosition.camera(withLatitude: lat, longitude: lng, zoom: 15.0)
+        self.mapView.camera = camera
+//        self.mapView.animate(to: camera)
 
     }
     

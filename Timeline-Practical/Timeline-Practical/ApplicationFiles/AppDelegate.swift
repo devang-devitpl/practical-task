@@ -139,6 +139,7 @@ extension AppDelegate: UITabBarControllerDelegate {
             return
         }
         if let viewCntl = (tabBarController.viewControllers?[0] as? UINavigationController)?.children[0] as? ViewController {
+            timeLineVC.selectedDate = viewCntl.selectedDate
             timeLineVC.fetchPlaces(selectedDate: viewCntl.selectedDate)
         }
     }

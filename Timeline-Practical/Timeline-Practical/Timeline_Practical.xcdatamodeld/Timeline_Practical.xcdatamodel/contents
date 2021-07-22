@@ -8,8 +8,9 @@
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="notes" optional="YES" attributeType="String"/>
         <attribute name="startTime" optional="YES" attributeType="String"/>
+        <attribute name="uuid" optional="YES" attributeType="String"/>
     </entity>
     <elements>
-        <element name="Places" positionX="-63" positionY="-18" width="128" height="134"/>
+        <element name="Places" positionX="-63" positionY="-18" width="128" height="149"/>
     </elements>
 </model>

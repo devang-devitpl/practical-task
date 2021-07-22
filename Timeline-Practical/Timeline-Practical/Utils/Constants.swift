@@ -10,8 +10,7 @@ import UIKit
 import CoreData
 
 enum NotificationConst: String {
-    case singleLocationUpdate = "singleLocationUpdate"
-   
+    case updateLocationList = "updateLocationList"
     
     func postNotification(notificationObject object: Any? = nil, userInfo aUserInfo: [AnyHashable : Any]? = nil) {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: self.rawValue), object: object, userInfo: aUserInfo)
@@ -23,14 +22,7 @@ enum NotificationConst: String {
 
 }
 
-
-//public let kCLLocationAccuracyBest: CLLocationAccuracy
-//public let kCLLocationAccuracyNearestTenMeters: CLLocationAccuracy
-//public let kCLLocationAccuracyHundredMeters: CLLocationAccuracy
-//public let kCLLocationAccuracyKilometer: CLLocationAccuracy
-//public let kCLLocationAccuracyThreeKilometers: CLLocationAccuracy
-
-
+// Enum - to update accuracy for the location
 enum LocationAccuracy: CLLocationAccuracy {
     case bestForNavigation
     case accuracyBest

@@ -23,27 +23,6 @@ class DBManager: NSObject {
         }
     }
 
-    class func store(location: LocationList) {
-        
-        let context = getContext()
-
-        let dbLocation = Places(context: context)
-        
-        dbLocation.latitude = location.lat ?? 0
-        dbLocation.longitude = location.lng ?? 0
-        dbLocation.startTime = location.startTime
-        dbLocation.endTime = location.endTime
-        dbLocation.name = location.name
-        dbLocation.notes = location.notes
-        
-        do {
-            try context.save()
-        } catch {
-            print("error store locaton: ", error.localizedDescription)
-        }
-
-    }
-
     class func addPlace(dicRequest: [String: Any]) {
         
         guard let name = dicRequest["name"] as? String,
@@ -61,6 +40,7 @@ class DBManager: NSObject {
 
         let dbLocation = Places(context: context)
         
+        dbLocation.uuid = UUID().uuidString
         dbLocation.latitude = lat
         dbLocation.longitude = lng
         dbLocation.startTime = startTime
@@ -97,9 +77,7 @@ class DBManager: NSObject {
     class func updatePlace(dicRequest: [String: Any]) {
         let context = getContext()
         
-        guard let name = dicRequest["name"] as? String,
-              let notes = dicRequest["notes"] as? String,
-              let startTime = dicRequest["startTime"] as? String,
+        guard let startTime = dicRequest["startTime"] as? String,
               let endTime = dicRequest["endTime"] as? String,
               let lat = dicRequest["lat"] as? Double,
               let lng = dicRequest["lng"] as? Double,
@@ -115,8 +93,6 @@ class DBManager: NSObject {
             fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [latPredicate, lngPredicate])
             
             if let fetchedPlace = try context.fetch(fetchRequest).first {
-                fetchedPlace.name = name
-                fetchedPlace.notes = notes
                 fetchedPlace.startTime = startTime
                 fetchedPlace.endTime = endTime
                 fetchedPlace.latitude = lat
@@ -132,6 +108,22 @@ class DBManager: NSObject {
             try context.save()
         } catch {
             print("error updating place to locaton: ", error.localizedDescription)
+        }
+    }
+    
+    class func updateNotes(uuid: String, notes: String) {
+        let context = getContext()
+        
+        do {
+            let fetchRequest:NSFetchRequest<Places> = Places.fetchRequest()
+            fetchRequest.predicate = NSPredicate(format: "uuid == %@", uuid)
+            
+            if let fetchedPlace = try context.fetch(fetchRequest).first {
+                fetchedPlace.notes = notes
+            }
+            try context.save()
+        } catch {
+            print("Error in udpating notes:", error.localizedDescription)
         }
     }
 }

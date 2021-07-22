@@ -39,7 +39,7 @@ extension APIService: TargetType {
     var task: Task {
         switch self {
         case .searchPlaces(let location, let keyword, let key):
-        return .requestParameters(parameters: ["location": location, "keyword": keyword, "key": key, "radius": 10000], encoding: URLEncoding(destination: .queryString))
+        return .requestParameters(parameters: ["location": location, "keyword": keyword, "key": key, "radius": 200000], encoding: URLEncoding(destination: .queryString))
         }
 
     }
